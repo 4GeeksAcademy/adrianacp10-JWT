@@ -9,15 +9,24 @@ from api.utils import APIException, generate_sitemap
 from api.models import db
 from api.routes import api
 from api.admin import setup_admin
-from api.commands import setup_commands
-
 # from models import Person
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
+from flask_cors import CORS
+
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../public/')
 app = Flask(__name__)
 app.url_map.strict_slashes = False
+
+app.config["JWT_SECRET_KEY"] = os.environ.get('JWT_SECRET')
+jwt = JWTManager(app)
+
+CORS(app)
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -35,7 +44,7 @@ db.init_app(app)
 setup_admin(app)
 
 # add the admin
-setup_commands(app)
+
 
 # Add all endpoints form the API with a "api" prefix
 app.register_blueprint(api, url_prefix='/api')
@@ -56,6 +65,10 @@ def sitemap():
         return generate_sitemap(app)
     return send_from_directory(static_file_dir, 'index.html')
 
+@app.route('/api/hello')
+def hello():
+    return jsonify({"message": "Hello, CORS is allowed!"})
+
 # any other endpoint will try to serve it like a static file
 
 
@@ -66,6 +79,7 @@ def serve_any_other_file(path):
     response = send_from_directory(static_file_dir, path)
     response.cache_control.max_age = 0  # avoid cache memory
     return response
+
 
 
 # this only runs if `$ python src/main.py` is executed
