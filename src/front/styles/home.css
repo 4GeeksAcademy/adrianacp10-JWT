@@ -1,7 +1,28 @@
-/*
-    home.css: This website contains selectors only used in home.css
+.signUp {
+    max-width: 500px;
+    text-align: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    justify-content: center;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: rgb(191, 221, 224);
+    box-shadow: 2px 2px darkgray;
+    border-color: grey;
 
-    All pages share the styles on index.css but you should create 
-    one more css for each page that will contain the selected used 
-    on that page only (the ones not reused in other pages).
-*/
+}
+
+.title {
+    text-align: center;
+    font-family: "Be Vietnam Pro", sans-serif;
+    font-style: normal;
+    font-weight: 1000;
+    color: #3f7a8d;
+    text-shadow:1px 1px white ;
+}
+
+.button {
+    width: 100%;
+    border-radius: 25px;
+    margin-top: 20px;
+}

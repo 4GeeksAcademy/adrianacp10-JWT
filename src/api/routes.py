@@ -18,17 +18,20 @@ api = Blueprint('api', __name__)
 # Allow CORS requests to this API
 CORS(api)
 
-#CREATE A TOKEN
+
 @api.route("/token", methods=["POST"])
 def create_token():
     email = request.json.get("email", None)
     password = request.json.get("password", None)
-    if email != "test" or password != "test":
-        return jsonify({"msg": "Bad email or password"}), 401
+    if not email or not password:
+        return jsonify({"msg": "email y password requeridos"})
+    user = User.query.filter_by(email = email, password = password).first()
+    if not user:
+        return jsonify({"msg": "email o password incorrectos"})
 
-    access_token = create_access_token(identity=email)
-    return jsonify(access_token=access_token)
 
+    access_token = create_access_token(identity=user.id)
+    return jsonify({"token": access_token, "user_id": user.id})
 
 
 @api.route("/hello", methods=["GET"])
@@ -42,24 +45,17 @@ def get_hello():
     }
     return jsonify(dictionary)
 
-##########
+
 @api.route("/privateuser", methods=["GET"])
 @jwt_required()
-def get_user():
-    email = get_jwt_identity()
-    print(email)
-    dictionary = {
-        "message": "hello world" + email
-    }
-    return jsonify(dictionary)
+def token_validation():
+    current_user_id = get_jwt_identity()
+    user = User.query.filter_by(id= current_user_id).first()
+    if user is None:
+        raise APIException("user not found", status_code=404)
+    return jsonify("user autenticated"), 200
+    
 
-
-
-
-#hay que hacer un get_user_All???
-
-
-#añadir un user
 
 @api.route("/signup", methods=["POST"])
 def sign_up():
@@ -81,9 +77,9 @@ def sign_up():
     #### agregar al nuevo usuario el new_user a la database
     db.session.add(new_user)
     db.session.commit()
-    ## una vez agregado el nuevo usuario a la base de datos, se devuelve el token
-    access_token = create_access_token(identity=new_user.id)
-    return jsonify({"token": access_token, "user_id": new_user.id}), 201
+    return jsonify({"user_id": new_user.id, "msg": "usuario creado correctamente"}), 201
+
+
 
 
 

@@ -26,15 +26,35 @@ const getState = ({ getStore, getActions, setStore }) => {
 				sessionStorage.removeItem("token");
 				console.log("login out")
 				const store = getStore();
-				setStore({ ...store, token: null });
+				setStore({ ...store, token: null, email: "",
+					password: "", });
 			},
+
 
 			syncTokenFromSessionStore: () => {
 				const token = sessionStorage.getItem("token");
-				console.log("aplicaction just loaded, synching the localstorage")
 				const store = getStore();
 				if (store.token && store.token != "" && store.token != undefined) {
 					setStore({ ...store, token: token });
+				}
+			},
+
+			signUp: async (formData) => {
+				try {
+					const response = await fetch('https://super-duper-space-bassoon-69g74jvvvp9gc67j-3001.app.github.dev/api/signup', {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify(formData)
+					});
+					if (!response.ok) {
+						const data = await response.json();
+						throw new Error(data.message || "Error al registrar usuario");
+					}
+					localStorage.setItem('formData', JSON.stringify(formData));
+				} catch (error) {
+					throw error;
 				}
 			},
 
@@ -69,6 +89,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.log("there has been an error login in")
 				}
 			},
+
+
+
+
+
+
+
 
 			getMessage: async () => {
 				const store = getStore();
