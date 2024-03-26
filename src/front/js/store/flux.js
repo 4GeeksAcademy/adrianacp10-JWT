@@ -81,7 +81,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					const data = await response.json();
 					console.log("this comes from the back end", data);
 					sessionStorage.setItem("token", data.access_token)
-					setStore({ token: data.access_token })
+					setStore({ token: data.token })
 					return true;
 
 				}
