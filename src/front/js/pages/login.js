@@ -16,7 +16,7 @@ export const Login = () => {
     };
 
     if (store.token && store.token !== "" && store.token !== undefined) {
-        navigate("/");
+        navigate("/logedin");
     }
 
     return (
